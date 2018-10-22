@@ -93,6 +93,8 @@ PrintWriter out=resp.getWriter();
 				}
 				else if(session.isNew()) {
 					++count;
+					session.setAttribute("time",count);
+
 				out.print("Sorry, username or password error!");  
 				 RequestDispatcher rd=req.getRequestDispatcher("login.html");
 				 rd.include(req, resp);

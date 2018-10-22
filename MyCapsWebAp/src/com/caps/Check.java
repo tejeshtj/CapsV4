@@ -7,27 +7,34 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@SuppressWarnings("serial")
-@WebServlet("/login")
-public class Login extends HttpServlet{
+public class Check extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	
-		String id=req.getParameter("email");
+		
+		String id=req.getParameter("name");
 		String password=req.getParameter("pass");
+		int count=1;
+		long time=0;
+		long diff=0;
+		Date date=new Date();
+		long time2=date.getTime();
+		 diff=time2-time/1000;
 		
-		PrintWriter out=resp.getWriter();
 		
+PrintWriter out=resp.getWriter();
+		
+		if(count<=3) {
 		java.sql.Connection con=null;
 		PreparedStatement pstmt=null;
 		ResultSet rs=null;
@@ -61,9 +68,35 @@ public class Login extends HttpServlet{
 			}
 			else
 			{
+				HttpSession session=req.getSession();
+				
+				session.setAttribute("name",id);
+				session.setAttribute("time",count);
+				if(session.isNew()==false) {
+					
+					
+					++count;
+					 time=session.getLastAccessedTime();
+					
+					if(count<=3) {
+					
+						
+						
+					session.setAttribute("time",count);
+					out.print("Sorry, username or password error!");  
+					 RequestDispatcher rd=req.getRequestDispatcher("login.html");
+					 rd.include(req, resp);
+					 
+					
+					}
+					
+				}
+				else if(session.isNew()) {
+					++count;
 				out.print("Sorry, username or password error!");  
 				 RequestDispatcher rd=req.getRequestDispatcher("login.html");
 				 rd.include(req, resp);
+				}
 			}
 				
 						}
@@ -78,10 +111,11 @@ public class Login extends HttpServlet{
 				try {
 					rs.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}
+			
 			if(pstmt!=null) {
 				try {
 					pstmt.close();
@@ -90,14 +124,8 @@ public class Login extends HttpServlet{
 					e.printStackTrace();
 				}
 			}
-			if(pstmt!=null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-	
-					e.printStackTrace();
-				}
-			}if(con!=null) {
+			
+			if(con!=null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
@@ -105,10 +133,22 @@ public class Login extends HttpServlet{
 					e.printStackTrace();
 				}
 			}
-		}
-	
-	 
+ 
 		
 	}
+		}
+		else if(count>=3 && diff<3600) {
+			
+		out.println("account locked");
+		}
+		else if(count>=3 && diff>3600) {
+			count=1;
+		}
+
+ }
+
+		
+		
+	
 
 }

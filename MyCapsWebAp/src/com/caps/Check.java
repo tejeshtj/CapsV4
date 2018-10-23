@@ -70,10 +70,10 @@ PrintWriter out=resp.getWriter();
 			        System.out.println(mail);
 			}
 			else
-			{
+			{/*
 				HttpSession session=req.getSession();
 				
-				session.setAttribute("name",id);
+				session.setAttribute("name",id);*/
 				
 				
 					
@@ -81,7 +81,7 @@ PrintWriter out=resp.getWriter();
 					Instant start = Instant.now();
 					System.out.println(start);
 											
-					session.setAttribute("time",count);
+					//session.setAttribute("time",count);
 					System.out.println(count);
 					out.print("Sorry, username or password error!");  
 					

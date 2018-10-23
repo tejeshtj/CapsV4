@@ -15,7 +15,7 @@ public class Test {
 		 
 		Duration timeDiff = Duration.between(start, stop);
 		
-		System.out.println(timeDiff.toMinutes());
+		System.out.println(timeDiff.toMillis());
 		
 	}
 }

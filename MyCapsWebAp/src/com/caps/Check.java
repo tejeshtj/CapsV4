@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -22,8 +23,10 @@ import javax.servlet.http.HttpSession;
 public class Check extends HttpServlet {
 	int count=0;
 	Instant start;
-	Instant stop = Instant.now();
-	long timeDiff = Duration.between(start, stop).toMillis();
+	Instant stop = null;
+	
+	
+	
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,7 +35,7 @@ public class Check extends HttpServlet {
 		String password=req.getParameter("pass");
 		
 		System.out.println(count);
-		System.out.println(timeDiff);
+		
 		
 		
 PrintWriter out=resp.getWriter();
@@ -78,7 +81,7 @@ PrintWriter out=resp.getWriter();
 				
 					
 					++count;
-					Instant start = Instant.now();
+					start = Instant.now();
 					System.out.println(start);
 											
 					//session.setAttribute("time",count);
@@ -128,6 +131,9 @@ PrintWriter out=resp.getWriter();
 		}
 		//else if(count>3 && diff<50) {
 		else {
+			stop=Instant.now();
+			long timeDiff = Duration.between(start, stop).toMillis();
+			System.out.println(timeDiff);
 			if(timeDiff<10000) {
 		out.println("account locked");
 		System.out.println("lock");

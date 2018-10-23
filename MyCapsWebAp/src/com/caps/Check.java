@@ -7,34 +7,37 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Properties;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@WebServlet("/check")
 public class Check extends HttpServlet {
+	int count=0;
+	Instant start;
+	Instant stop = Instant.now();
+	long timeDiff = Duration.between(start, stop).toMillis();
+	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		String id=req.getParameter("name");
 		String password=req.getParameter("pass");
-		int count=1;
-		long time=0;
-		long diff=0;
-		Date date=new Date();
-		long time2=date.getTime();
-		 diff=time2-time/1000;
+		
+		System.out.println(count);
+		System.out.println(timeDiff);
 		
 		
 PrintWriter out=resp.getWriter();
 		
-		if(count<=3) {
+		if(count<3) {
 		java.sql.Connection con=null;
 		PreparedStatement pstmt=null;
 		ResultSet rs=null;
@@ -71,34 +74,18 @@ PrintWriter out=resp.getWriter();
 				HttpSession session=req.getSession();
 				
 				session.setAttribute("name",id);
-				session.setAttribute("time",count);
-				if(session.isNew()==false) {
-					
+				
+				
 					
 					++count;
-					 time=session.getLastAccessedTime();
-					
-					if(count<=3) {
-					
-						
-						
+					Instant start = Instant.now();
+					System.out.println(start);
+											
 					session.setAttribute("time",count);
+					System.out.println(count);
 					out.print("Sorry, username or password error!");  
-					 RequestDispatcher rd=req.getRequestDispatcher("login.html");
-					 rd.include(req, resp);
-					 
 					
-					}
-					
-				}
-				else if(session.isNew()) {
-					++count;
-					session.setAttribute("time",count);
-
-				out.print("Sorry, username or password error!");  
-				 RequestDispatcher rd=req.getRequestDispatcher("login.html");
-				 rd.include(req, resp);
-				}
+				
 			}
 				
 						}
@@ -139,13 +126,18 @@ PrintWriter out=resp.getWriter();
 		
 	}
 		}
-		else if(count>=3 && diff<3600) {
-			
+		//else if(count>3 && diff<50) {
+		else {
+			if(timeDiff<10000) {
 		out.println("account locked");
-		}
-		else if(count>=3 && diff>3600) {
+		System.out.println("lock");
+			}else {
+				count=0;
+			}
+			}
+		/*else if(count>3 && diff>5) {
 			count=1;
-		}
+		}*/
 
  }
 
